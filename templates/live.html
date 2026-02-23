@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live News Prediction</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; text-align: center; }
+        .news-box { background: white; margin: 20px auto; padding: 15px; width: 70%; border-radius: 8px; }
+        nav a { margin: 15px; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/live">Live News</a>
+    <a href="/about">About</a>
+</nav>
+
+<h1>Live News Predictions</h1>
+
+{% for headline, result in results %}
+    <div class="news-box">
+        <p><strong>News:</strong> {{ headline }}</p>
+        <p><strong>Prediction:</strong> {{ result }}</p>
+    </div>
+{% endfor %}
+
+</body>
+</html>
