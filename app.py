@@ -3,10 +3,11 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 import requests
+import os
 
 app = Flask(__name__)
 
-# Load datasets
+# Load dataset
 fake = pd.read_csv("fake.csv")
 true = pd.read_csv("true.csv")
 
@@ -35,29 +36,25 @@ def index():
         news_vector = vectorizer.transform([news])
         pred = model.predict(news_vector)
 
-        if pred[0] == 0:
-            prediction = "FAKE NEWS"
-        else:
-            prediction = "REAL NEWS"
+        prediction = "FAKE NEWS" if pred[0] == 0 else "REAL NEWS"
 
     return render_template("index.html", prediction=prediction)
 
 # Live news page
 @app.route("/live")
 def live():
-    API_KEY = "e3669af214f245faabc32d1164215361"
-    url = f"https://newsapi.org/v2/everything?q=news&language=en&apiKey={API_KEY}"
+    API_KEY = os.environ.get("API_KEY")
 
+    url = f"https://newsapi.org/v2/everything?q=news&language=en&apiKey={API_KEY}"
     response = requests.get(url)
     news_data = response.json()
 
     results = []
 
-    for article in news_data["articles"]:
+    for article in news_data.get("articles", []):
         headline = article["title"]
         news_vector = vectorizer.transform([headline])
         pred = model.predict(news_vector)
-
         result = "FAKE" if pred[0] == 0 else "REAL"
         results.append((headline, result))
 
@@ -68,5 +65,6 @@ def live():
 def about():
     return render_template("about.html")
 
+# Render start
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
